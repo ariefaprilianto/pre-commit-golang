@@ -37,10 +37,9 @@ done
 for SERVICE in $SERVICES
 do
   for val in "${matrixtocheck[$SERVICE]}"; do
+      echo "Changges applied to [$SERVICE] service, starting test..."
       case $val in
       1)
-          echo "Changges applied to [$SERVICE] service, starting test..."
-
           # database tests
           db="./infrastructure/database/$SERVICE/..."
           go test -v $(echo "$db") | tee test-db.out
@@ -53,25 +52,34 @@ do
           go test -v $(echo "$usecase") | tee test-usecase.out
           if [ ${PIPESTATUS[0]} -ne 0 ]; then
             ((haserror=haserror+1))
-            failedtest[${#failedtest[@]}]="database"
+            failedtest[${#failedtest[@]}]="usecase"
           fi
           # web infra tests
           web="./infrastructure/service/internal_/web/api/$SERVICE/..."
           go test -v $(echo "$web") | tee test-web.out
           if [ ${PIPESTATUS[0]} -ne 0 ]; then
             ((haserror=haserror+1))
-             failedtest[${#failedtest[@]}]="database"
+             failedtest[${#failedtest[@]}]="web"
           fi
 
 
           ;;
       *)
+          # web infra tests
+          repowide="./..."
+          go test -v $(echo "$web") | tee test-repowide.out
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            ((haserror=haserror+1))
+             failedtest[${#failedtest[@]}]="repowide"
+          fi
+
+          ;;
       esac
   done
 done
 
 if [ $haserror -ne 0 ]; then
-  echo "Warning! Some of unit tests failed. Please check!"
+  echo "Warning! Some of unit tests failed. Test results are written in test-db.out, test-usecase.out, test-web.out, and test-repowide.out. Please check!"
   for value in "${failedtest[@]}"
   do
       echo "hint: $value"
