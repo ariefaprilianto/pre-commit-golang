@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 remotebanch="origin/$branch"
 
