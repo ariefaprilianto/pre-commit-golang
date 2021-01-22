@@ -79,7 +79,7 @@ do
 done
 
 if [ $haserror -ne 0 ]; then
-  echo "Warning! Some of unit tests failed. Test results are written in test-db.out, test-usecase.out, test-web.out, and test-repowide.out. Please check!"
+  echo "Warning! Some of unit tests failed. Test results are written in test-db.out, test-usecase.out, test-web.out, or test-repowide.out. Please check!"
   for value in "${failedtest[@]}"
   do
       echo "hint: $value"
